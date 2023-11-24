@@ -14,13 +14,25 @@ defmodule DecodeFeature do
     IO.inspect(feature, label: "feature")
 
     %{
-      "properties" => decode_features(feature.properties, feature.values, data.keys),
+      "properties" => decode_properties(feature.properties, feature.values, data.keys),
       "type" => "Feature",
-      "geometry" => decode_geometry(feature.geometry, data.precision, data.dimensions)
-    }
+      "geometry" => decode_geometry(feature.geometry, data.precision, data.dimensions),
+    } |> maybe_add_id(feature.id_type)
   end
 
-  defp decode_features(properties, values, keys) do
+  defp maybe_add_id(feature, id) do
+    if id != nil do
+      Map.put(feature, "id", decode_id(id))
+    else
+      feature
+    end
+  end
+
+  defp decode_id(nil), do: nil
+  defp decode_id({:id, id}), do: id
+
+
+  defp decode_properties(properties, values, keys) do
     Enum.chunk_every(properties, 2)
     |> Enum.map(fn [key_idx, val_idx] ->
       {keys |> Enum.at(key_idx), values |> Enum.at(val_idx) |> decode_value()}
