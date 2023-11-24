@@ -1,26 +1,26 @@
 defmodule DecodeGeometry do
   def decode(geo, precision, dimensions) do
     case geo.type do
-      :POINT -> make_point(geo.coords, precision)
-      :MULTIPOINT -> make_multi_point(geo.coords, precision, dimensions)
-      :LINESTRING -> make_line_string(geo.coords, precision, dimensions)
-      :MULTILINESTRING -> make_multi_line_string(geo.lengths, geo.coords, precision, dimensions)
-      :POLYGON -> make_polygon(geo.lengths, geo.coords, precision, dimensions)
-      :MULTIPOLYGON -> make_multi_polygon(geo.lengths, geo.coords, precision, dimensions)
+      :POINT -> %{"type" => "Point", "coordinates" => make_point(geo.coords, precision)}
+      :MULTIPOINT -> %{"type" => "MultiPoint", "coordinates" => make_multi_point(geo.coords, precision, dimensions)}
+      :LINESTRING -> %{"type" => "LineString", "coordinates" => make_line_string(geo.coords, precision, dimensions)}
+      :MULTILINESTRING -> %{"type" => "MultiLineString", "coordinates" => make_multi_line_string(geo.lengths, geo.coords, precision, dimensions)}
+      :POLYGON -> %{"type" => "Polygon", "coordinates" => make_polygon(geo.lengths, geo.coords, precision, dimensions)}
+      :MULTIPOLYGON -> %{"type" => "MultiPolygon", "coordinates" => make_multi_polygon(geo.lengths, geo.coords, precision, dimensions)}
       _ -> %{}
     end
   end
 
   defp make_point(in_coords, precision) do
-    %{"type" => "Point", "coordinates" => make_coords(in_coords, precision)}
+    make_coords(in_coords, precision)
   end
 
   defp make_multi_point(in_coords, precision, dimension) do
-    %{"type" => "MultiPoint", "coordinates" => make_line(in_coords, precision, dimension, false)}
+    make_line(in_coords, precision, dimension, false)
   end
 
   defp make_line_string(in_coords, precision, dimension) do
-    %{"type" => "LineString", "coordinates" => make_line(in_coords, precision, dimension, false)}
+    make_line(in_coords, precision, dimension, false)
   end
 
   defp make_multi_line_string(lengths, in_coords, precision, dimension) do
@@ -31,7 +31,7 @@ defmodule DecodeGeometry do
       {[line | acc], remaining_coords}
     end)
 
-    %{"type" => "MultiLineString", "coordinates" => Enum.reverse(lines)}
+    Enum.reverse(lines)
   end
 
   def make_polygon(lengths, in_coords, precision, dimension) do
@@ -42,7 +42,7 @@ defmodule DecodeGeometry do
       {[ring | acc], remaining_coords}
     end)
 
-    %{"type" => "Polygon", "coordinates" => Enum.reverse(rings)}
+    Enum.reverse(rings)
   end
 
   def make_multi_polygon(lengths, in_coords, precision, dimension) do
@@ -55,9 +55,10 @@ defmodule DecodeGeometry do
       {[polygon | acc], remaining_coords}
     end)
 
-    %{"type" => "MultiPolygon", "coordinates" => Enum.reverse(polygons)}
+    Enum.reverse(polygons)
   end
 
+  def make_ring([], _precision, _dimension), do: []
   def make_ring(in_coords, precision, dimension) do
     points = make_line(in_coords, precision, dimension, true)
     [first | _] = points
@@ -65,14 +66,15 @@ defmodule DecodeGeometry do
   end
 
   def make_line(in_coords, precision, dimension, is_closed) do
+    IO.inspect(in_coords,label: "make_line_in")
     prev_coords = [0, 0]
     in_coords
     |> Enum.chunk_every(2)
     |> Enum.with_index()
     |> Enum.map(fn {coords, i} ->
       prev_coords = Enum.zip_with(coords, prev_coords, &Kernel.+/2)
-      make_point(prev_coords, precision)
-    end)
+      make_coords(prev_coords, precision)
+    end) |> IO.inspect(label: "make_line_out")
   end
 
   def make_coords(in_coords, precision) do
