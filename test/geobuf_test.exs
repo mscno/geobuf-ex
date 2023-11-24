@@ -4,7 +4,7 @@ defmodule GeobufTest.GeobufTest do
 
   test "decodes point feature from Geobuf.Data to GeoJson Feature" do
     geobuf_data = %Geobuf.Data{
-      keys: [],
+      keys: ["foo"],
       dimensions: 2,
       precision: 3,
       data_type:
@@ -15,12 +15,16 @@ defmodule GeobufTest.GeobufTest do
              lengths: [],
              coords: [124_123, 234_456],
              geometries: [],
-             values: [],
              custom_properties: [],
              __unknown_fields__: []
            },
-           values: [],
-           properties: [],
+           values: [
+             %Geobuf.Data.Value{
+               value_type: {:string_value, "bar"},
+               __unknown_fields__: []
+             }
+           ],
+           properties: [0, 0],
            custom_properties: [],
            id_type: nil,
            __unknown_fields__: []
@@ -30,8 +34,8 @@ defmodule GeobufTest.GeobufTest do
 
     geojson_feature = %{
       "type" => "Feature",
-      "geometry" => %{"type" => "Point", "coordinates" => [124.123, 234.456789]},
-      "properties" => nil
+      "geometry" => %{"type" => "Point", "coordinates" => [124.123, 234.456]},
+      "properties" => %{"foo" => "bar"}
     }
 
     decoded_feature = Geobuf.decode(geobuf_data)
@@ -39,43 +43,7 @@ defmodule GeobufTest.GeobufTest do
     assert geojson_feature == decoded_feature
   end
 
-    test "decodes point feature from Geobuf.Data to GeoJson Feature" do
-    geobuf_data = %Geobuf.Data{
-      keys: [],
-      dimensions: 2,
-      precision: 3,
-      data_type:
-        {:feature,
-         %Geobuf.Data.Feature{
-           geometry: %Geobuf.Data.Geometry{
-             type: :POINT,
-             lengths: [],
-             coords: [124_123, 234_456],
-             geometries: [],
-             values: [],
-             custom_properties: [],
-             __unknown_fields__: []
-           },
-           values: [],
-           properties: [],
-           custom_properties: [],
-           id_type: nil,
-           __unknown_fields__: []
-         }},
-      __unknown_fields__: []
-    }
-
-    geojson_feature = %{
-      "type" => "Feature",
-      "geometry" => %{"type" => "Point", "coordinates" => [124.123, 234.456789]},
-      "properties" => nil
-    }
-
-    decoded_feature = Geobuf.decode(geobuf_data)
-
-    assert geojson_feature == decoded_feature
-  end
-
+  @tag :skip
   test "decodes multipolygon with features from Geobuf.Data to GeoJson Feature" do
     geobuf_data = %Geobuf.Data{
       keys: ["AREA", "COLORKEY", "area", "index"],

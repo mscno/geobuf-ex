@@ -21,6 +21,7 @@ defmodule Geobuf.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:jason, "~> 1.4"},
       {:protobuf, "~> 0.10.0"},
       # Only for files generated from Google's protos.
       # Can be ignored if you don't use Google's protos.

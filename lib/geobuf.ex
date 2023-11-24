@@ -9,6 +9,6 @@ defmodule Geobuf do
 
   """
   def decode(data) do
-    %{}
+    DecodeFeature.decode(data)
   end
 end
