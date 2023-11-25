@@ -9,15 +9,25 @@ defmodule DecodeFeature do
     :polygon => "Polygon",
     :multi_polygon => "MultiPolygon"
   }
-  def decode(data) do
-    {:feature, feature} = data.data_type
-    IO.inspect(feature, label: "feature")
 
+  # TODO: This is not working yet, to be fixed in a future release
+  def decode(%Geobuf.Data{data_type: {:feature_collection, feature_collection}}) do
+    %{
+      "type" => "FeatureCollection",
+      "features" => Enum.map(feature_collection.features, &decode/1)
+    }
+  end
+
+  def decode(%Geobuf.Data{data_type: {:feature, feature}}= data) do
     %{
       "properties" => decode_properties(feature.properties, feature.values, data.keys),
       "type" => "Feature",
       "geometry" => decode_geometry(feature.geometry, data.precision, data.dimensions),
     } |> maybe_add_id(feature.id_type)
+  end
+
+  def decode(%Geobuf.Data{data_type: {:geometry, geometry}}= data) do
+    decode_geometry(geometry, data.precision, data.dimensions)
   end
 
   defp maybe_add_id(feature, id) do

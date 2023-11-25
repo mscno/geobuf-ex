@@ -35,14 +35,15 @@ defmodule DecodeGeometry do
   end
 
   def make_polygon(lengths, in_coords, precision, dimension) do
-    {rings, _} = Enum.reduce(lengths, {[], in_coords}, fn length, {acc, coords} ->
+
+    {[_,rings ], _} = Enum.reduce(lengths, {[], in_coords}, fn length, {acc, coords} ->
       l = length * dimension
       ring = make_ring(Enum.take(coords, l), precision, dimension)
       remaining_coords = Enum.drop(coords, l)
       {[ring | acc], remaining_coords}
     end)
-
     Enum.reverse(rings)
+    [rings]
   end
 
   def make_multi_polygon(lengths, in_coords, precision, dimension) do
@@ -65,16 +66,15 @@ defmodule DecodeGeometry do
     points ++ [first]
   end
 
-  def make_line(in_coords, precision, dimension, is_closed) do
-    IO.inspect(in_coords,label: "make_line_in")
-    prev_coords = [0, 0]
+  def make_line(in_coords, precision, _dimension, _is_closed) do
     in_coords
     |> Enum.chunk_every(2)
-    |> Enum.with_index()
-    |> Enum.map(fn {coords, i} ->
-      prev_coords = Enum.zip_with(coords, prev_coords, &Kernel.+/2)
-      make_coords(prev_coords, precision)
-    end) |> IO.inspect(label: "make_line_out")
+    |> Enum.reduce({[0, 0], []}, fn coords, {prev_coords, acc} ->
+      new_coords = Enum.zip_with(coords, prev_coords, &Kernel.+/2)
+      {new_coords,[make_coords(new_coords, precision) | acc]}
+    end)
+    |> elem(1)
+    |> Enum.reverse()
   end
 
   def make_coords(in_coords, precision) do

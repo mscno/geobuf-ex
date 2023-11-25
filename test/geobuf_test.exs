@@ -127,7 +127,7 @@ defmodule GeobufTest.GeobufTest do
                -272_370,
                31630,
                -1_138_660,
-               852_749
+               852_748
              ],
              geometries: [],
              values: [],
@@ -326,7 +326,7 @@ defmodule GeobufTest.GeobufTest do
               ],
               [
                 -83.647031,
-                33.9061979
+                33.9061978
               ],
               [
                 -83.537385,
