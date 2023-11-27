@@ -1,15 +1,4 @@
 defmodule DecodeFeature do
-  @geojson_types %{
-    :feature_collection => "FeatureCollection",
-    :feature => "Feature",
-    :point => "Point",
-    :multi_point => "MultiPoint",
-    :line_string => "LineString",
-    :multi_line_string => "MultiLineString",
-    :polygon => "Polygon",
-    :multi_polygon => "MultiPolygon"
-  }
-
   # TODO: This is not working yet, to be fixed in a future release
   def decode(%Geobuf.Data{data_type: {:feature_collection, feature_collection}}) do
     %{
@@ -18,15 +7,16 @@ defmodule DecodeFeature do
     }
   end
 
-  def decode(%Geobuf.Data{data_type: {:feature, feature}}= data) do
+  def decode(%Geobuf.Data{data_type: {:feature, feature}} = data) do
     %{
       "properties" => decode_properties(feature.properties, feature.values, data.keys),
       "type" => "Feature",
-      "geometry" => decode_geometry(feature.geometry, data.precision, data.dimensions),
-    } |> maybe_add_id(feature.id_type)
+      "geometry" => decode_geometry(feature.geometry, data.precision, data.dimensions)
+    }
+    |> maybe_add_id(feature.id_type)
   end
 
-  def decode(%Geobuf.Data{data_type: {:geometry, geometry}}= data) do
+  def decode(%Geobuf.Data{data_type: {:geometry, geometry}} = data) do
     decode_geometry(geometry, data.precision, data.dimensions)
   end
 
@@ -41,7 +31,6 @@ defmodule DecodeFeature do
   defp decode_id(nil), do: nil
   defp decode_id({:id, id}), do: id
 
-
   defp decode_properties(properties, values, keys) do
     Enum.chunk_every(properties, 2)
     |> Enum.map(fn [key_idx, val_idx] ->
@@ -52,10 +41,6 @@ defmodule DecodeFeature do
 
   defp decode_geometry(geo, precision, dimensions) do
     DecodeGeometry.decode(geo, precision, dimensions)
-  end
-
-  defp new_feature(coordinates) do
-    # Implement your feature creation logic here
   end
 
   defp decode_value(%Geobuf.Data.Value{value_type: {type, value}}) do

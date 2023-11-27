@@ -5,6 +5,7 @@ defmodule Math do
 
   defp do_get_precision(point, e) do
     base = round(point * e)
+
     if base / e != point and e < @max_precision do
       do_get_precision(point, e * 10)
     else

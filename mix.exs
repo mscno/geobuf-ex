@@ -13,9 +13,7 @@ defmodule Geobuf.MixProject do
 
   # Run "mix help compile.app" to learn about applications.
   def application do
-    [
-      extra_applications: [:logger]
-    ]
+    []
   end
 
   # Run "mix help deps" to learn about dependencies.
@@ -23,12 +21,23 @@ defmodule Geobuf.MixProject do
     [
       {:jason, "~> 1.4"},
       {:protobuf, "~> 0.10.0"},
-      # Only for files generated from Google's protos.
-      # Can be ignored if you don't use Google's protos.
-      # Or you can generate the code by yourself.
       {:google_protos, "~> 0.1"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+    ]
+  end
+
+  def description() do
+    "Elixir implementation of the Geobuf format. Geobuf is a compact binary encoding for geographic data. It is based on protobuf, but optimized for encoding geographic data. It is has 1to1 compatibility with GeoJSON."
+  end
+
+  def package() do
+    [
+      # These are the default files included in the package
+      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
+                license* CHANGELOG* changelog* src),
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/paraplyventures/geobuf-ex"}
     ]
   end
 end

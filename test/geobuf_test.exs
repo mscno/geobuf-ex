@@ -43,7 +43,6 @@ defmodule GeobufTest.GeobufTest do
     assert geojson_feature == decoded_feature
   end
 
-
   test "decodes multipolygon with features from Geobuf.Data to GeoJson Feature" do
     geobuf_data = %Geobuf.Data{
       keys: ["AREA", "COLORKEY", "area", "index"],
