@@ -8,6 +8,8 @@ defmodule Geobuf.MixProject do
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps()
+      package: package(),
+      description: description()
     ]
   end
 
@@ -27,17 +29,16 @@ defmodule Geobuf.MixProject do
     ]
   end
 
-  def description() do
+  defp description() do
     "Elixir implementation of the Geobuf format. Geobuf is a compact binary encoding for geographic data. It is based on protobuf, but optimized for encoding geographic data. It is has 1to1 compatibility with GeoJSON."
   end
 
-  def package() do
-    [
-      # These are the default files included in the package
-      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
-                license* CHANGELOG* changelog* src),
+  defp package do
+    %{
       licenses: ["MIT"],
+      maintainers: ["Justin Baker"],
       links: %{"GitHub" => "https://github.com/paraplyventures/geobuf-ex"}
-    ]
+    }
   end
+
 end
