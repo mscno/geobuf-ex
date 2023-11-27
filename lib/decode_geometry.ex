@@ -79,15 +79,14 @@ defmodule DecodeGeometry do
   end
 
   def make_multi_polygon(lengths, in_coords, precision, dimension) do
-    [poly_count | lengths] = lengths
-
-    {polygons, _} =
-      Enum.reduce(0..(poly_count - 1), {[], in_coords}, fn _, {acc, coords} ->
-        [ring_count | lengths] = lengths
-        polygon = make_polygon([Enum.at(lengths, ring_count + 1)], coords, precision, dimension)
-        skip = Enum.sum(Enum.take(lengths, ring_count)) * dimension
-        remaining_coords = Enum.drop(coords, skip)
-        {[polygon | acc], remaining_coords}
+    {[poly_count] , lengths} = Enum.split(lengths,1)
+    {polygons, _, _} =
+      Enum.reduce(0..(poly_count - 1), {[], in_coords,lengths}, fn _, {acc, coords, lengths} ->
+        {[ring_count], lengths} = Enum.split(lengths,1)
+        {current_length, lengths} = Enum.split(lengths,ring_count)
+        {current_coords,remaining_coords} = Enum.split(coords, Enum.sum(Enum.take(current_length, ring_count)) * dimension)
+        polygon = make_polygon(current_length, current_coords, precision, dimension)
+        {[polygon | acc], remaining_coords,lengths}
       end)
 
     Enum.reverse(polygons)
