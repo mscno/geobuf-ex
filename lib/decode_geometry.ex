@@ -64,16 +64,18 @@ defmodule DecodeGeometry do
   end
 
   def make_polygon(lengths, in_coords, precision, dimension) do
-    {[_, rings], _} =
+    {rings, _} =
       Enum.reduce(lengths, {[], in_coords}, fn length, {acc, coords} ->
         l = length * dimension
-        ring = make_ring(Enum.take(coords, l), precision, dimension)
-        remaining_coords = Enum.drop(coords, l)
+        # Split the coords into the current ring and the remaining coords
+        {current_coords, remaining_coords} = Enum.split(coords, l)
+        # Make the ring of the current polygon
+        ring = make_ring(current_coords, precision, dimension)
+        # Add the ring to the accumulator
         {[ring | acc], remaining_coords}
       end)
 
     Enum.reverse(rings)
-    [rings]
   end
 
   def make_multi_polygon(lengths, in_coords, precision, dimension) do
@@ -82,7 +84,7 @@ defmodule DecodeGeometry do
     {polygons, _} =
       Enum.reduce(0..(poly_count - 1), {[], in_coords}, fn _, {acc, coords} ->
         [ring_count | lengths] = lengths
-        polygon = make_polygon(Enum.take(lengths, ring_count + 1), coords, precision, dimension)
+        polygon = make_polygon([Enum.at(lengths, ring_count + 1)], coords, precision, dimension)
         skip = Enum.sum(Enum.take(lengths, ring_count)) * dimension
         remaining_coords = Enum.drop(coords, skip)
         {[polygon | acc], remaining_coords}
