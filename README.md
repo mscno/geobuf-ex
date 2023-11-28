@@ -10,7 +10,7 @@ by adding `geobuf` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:geobuf, "~> 0.1.0"}
+    {:geobuf, "~> 0.1.3"}
   ]
 end
 ```
