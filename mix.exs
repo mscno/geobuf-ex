@@ -38,7 +38,7 @@ defmodule Geobuf.MixProject do
     %{
       licenses: ["MIT"],
       maintainers: ["mscno"],
-      links: %{"GitHub" => "https://github.com/paraplyventures/geobuf-ex"}
+      links: %{"GitHub" => "https://github.com/mscno/geobuf-ex"}
     }
   end
 end
