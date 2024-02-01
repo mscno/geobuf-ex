@@ -1,6 +1,6 @@
 # Geobuf
 
-**TODO: Add description**
+Elixir implementation of the Geobuf format. Geobuf is a compact binary encoding for geographic data. It is based on protobuf, but optimized for encoding geographic data. It is has 1to1 compatibility with GeoJSON.
 
 ## Installation
 
