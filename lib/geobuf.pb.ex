@@ -3,13 +3,14 @@ defmodule Geobuf.Data.Geometry.Type do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:POINT, 0)
-  field(:MULTIPOINT, 1)
-  field(:LINESTRING, 2)
-  field(:MULTILINESTRING, 3)
-  field(:POLYGON, 4)
-  field(:MULTIPOLYGON, 5)
-  field(:GEOMETRYCOLLECTION, 6)
+  field :EMPTY, 0
+  field :POINT, 1
+  field :MULTIPOINT, 2
+  field :LINESTRING, 3
+  field :MULTILINESTRING, 4
+  field :POLYGON, 5
+  field :MULTIPOLYGON, 6
+  field :GEOMETRYCOLLECTION, 7
 end
 
 defmodule Geobuf.DataSlice do

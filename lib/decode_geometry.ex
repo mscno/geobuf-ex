@@ -1,6 +1,7 @@
 defmodule DecodeGeometry do
   def decode(geo, precision, dimensions) do
     case geo.type do
+      :EMPTY -> nil
       :POINT ->
         %{"type" => "Point", "coordinates" => make_point(geo.coords, precision)}
 
